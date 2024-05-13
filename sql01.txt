@@ -1,0 +1,798 @@
+Microsoft Windows [Version 10.0.22631.3447]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\acer>mysql -u root -p
+Enter password: ***********
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 14
+Server version: 8.0.36 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2024, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| society            |
+| sys                |
++--------------------+
+5 rows in set (0.02 sec)
+
+mysql> use mysql;
+Database changed
+mysql> select* from student;
+Empty set (0.01 sec)
+
+mysql> desc student;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| rollNo      | char(6)     | NO   | PRI | NULL    |       |
+| studentName | varchar(20) | YES  |     | NULL    |       |
+| course      | varchar(10) | YES  |     | NULL    |       |
+| dob         | date        | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> CREATE TABLE Society (
+    ->     SocID CHAR(6) PRIMARY KEY,
+    ->     SocName VARCHAR(20),
+    ->     MentorName VARCHAR(15),
+    ->     TotalSeats INT UNSIGNED
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> desc society;
++------------+--------------+------+-----+---------+-------+
+| Field      | Type         | Null | Key | Default | Extra |
++------------+--------------+------+-----+---------+-------+
+| SocID      | char(6)      | NO   | PRI | NULL    |       |
+| SocName    | varchar(20)  | YES  |     | NULL    |       |
+| MentorName | varchar(15)  | YES  |     | NULL    |       |
+| TotalSeats | int unsigned | YES  |     | NULL    |       |
++------------+--------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> CREATE TABLE Enrollment (
+    ->     RollNo CHAR(6),
+    ->     SocID CHAR(6),
+    ->     DateOfEnrollment DATE,
+    ->     FOREIGN KEY (RollNo) REFERENCES Student(RollNo),
+    ->     FOREIGN KEY (SocID) REFERENCES Society(SocID)
+    -> );
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> INSERT INTO Student (RollNo, Name, Course, DOB) VALUES
+    -> ('16111', 'Kartik', 'Computer Science', '2004-01-15'),
+    -> ('16112', 'Krishna', 'Computer Science', '2004-02-15'),
+    -> ('16113', 'Ramesh', 'Physics', '2004-08-18'),
+    -> ('16114', 'Aarush', 'Chemistry', '2002-07-18');
+ERROR 1054 (42S22): Unknown column 'Name' in 'field list'
+mysql> INSERT INTO Student (RollNo, studentName, Course, DOB) VALUES
+    -> ('16111', 'Kartik', 'Computer Science', '2004-01-15'),
+    -> ('16112', 'Krishna', 'Computer Science', '2004-02-15'),
+    -> ('16113', 'Ramesh', 'Physics', '2004-08-18'),
+    -> ('16114', 'Aarush', 'Chemistry', '2002-07-18');
+ERROR 1406 (22001): Data too long for column 'course' at row 1
+mysql> INSERT INTO Student (RollNo, Name, Course, DOB) VALUES
+    -> ('16111', 'Kartik', 'CS', '2004-01-15'),
+    -> ('16112', 'Krishna', 'CS', '2004-02-15'),
+    -> ('16113', 'Ramesh', 'Physics', '2004-08-18'),
+    -> ('16114', 'Aarush', 'Chemistry', '2002-07-18');
+ERROR 1054 (42S22): Unknown column 'Name' in 'field list'
+mysql> INSERT INTO Student (RollNo, studentName, Course, DOB) VALUES
+    -> ('16111', 'Kartik', 'CS', '2004-01-15'),
+    -> ('16112', 'Krishna', 'CS', '2004-02-15'),
+    -> ('16113', 'Ramesh', 'Physics', '2004-08-18'),
+    -> ('16114', 'Aarush', 'Chemistry', '2002-07-18');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> select * from student;
++--------+-------------+-----------+------------+
+| rollNo | studentName | course    | dob        |
++--------+-------------+-----------+------------+
+| 16111  | Kartik      | CS        | 2004-01-15 |
+| 16112  | Krishna     | CS        | 2004-02-15 |
+| 16113  | Ramesh      | Physics   | 2004-08-18 |
+| 16114  | Aarush      | Chemistry | 2002-07-18 |
++--------+-------------+-----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> INSERT INTO Society (SocID, SocName, MentorName, TotalSeats) VALUES
+    -> ('S001', 'Chess Club', 'Mr. Gupta', 30),
+    -> ('S002', 'Maniera', 'Mr. Sharma', 25),
+    -> ('S003', 'Blitz', 'Mr. Jain', 20);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Enrollment (RollNo, SocID, DateOfEnrollment) VALUES
+    -> ('16111', 'S001', '2024-03-10'),
+    -> ('16112', 'S002', '2024-03-15'),
+    -> ('16113', 'S001', '2024-03-12'),
+    -> ('16114', 'S003', '2024-03-20'),
+    -> ('16111', 'S002', '2024-03-25');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SELECT DISTINCT s.Name
+    -> FROM Student s
+    -> INNER JOIN Enrollment e ON s.RollNo = e.RollNo;
+ERROR 1054 (42S22): Unknown column 's.Name' in 'field list'
+mysql> SELECT SocName
+    -> FROM Society;
++------------+
+| SocName    |
++------------+
+| Chess Club |
+| Maniera    |
+| Blitz      |
++------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from student;
++--------+-------------+-----------+------------+
+| rollNo | studentName | course    | dob        |
++--------+-------------+-----------+------------+
+| 16111  | Kartik      | CS        | 2004-01-15 |
+| 16112  | Krishna     | CS        | 2004-02-15 |
+| 16113  | Ramesh      | Physics   | 2004-08-18 |
+| 16114  | Aarush      | Chemistry | 2002-07-18 |
++--------+-------------+-----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from society
+    -> ;
++-------+------------+------------+------------+
+| SocID | SocName    | MentorName | TotalSeats |
++-------+------------+------------+------------+
+| S001  | Chess Club | Mr. Gupta  |         30 |
+| S002  | Maniera    | Mr. Sharma |         25 |
+| S003  | Blitz      | Mr. Jain   |         20 |
++-------+------------+------------+------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT DISTINCT s.studentName
+    -> FROM Student s
+    -> INNER JOIN Enrollment e ON s.RollNo = e.Rollno;
++-------------+
+| studentName |
++-------------+
+| Kartik      |
+| Krishna     |
+| Ramesh      |
+| Aarush      |
++-------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT SocName
+    -> FROM Society;
++------------+
+| SocName    |
++------------+
+| Chess Club |
+| Maniera    |
+| Blitz      |
++------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT studentName
+    -> FROM Student
+    -> WHERE studentName LIKE 'A%';
++-------------+
+| studentName |
++-------------+
+| Aarush      |
++-------------+
+1 row in set (0.01 sec)
+
+mysql> SELECT *
+    -> FROM Student
+    -> WHERE Course IN ('Computer Science', 'Chemistry');
++--------+-------------+-----------+------------+
+| rollNo | studentName | course    | dob        |
++--------+-------------+-----------+------------+
+| 16114  | Aarush      | Chemistry | 2002-07-18 |
++--------+-------------+-----------+------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT studentName
+    -> FROM Student
+    -> WHERE (RollNo LIKE 'X%' OR RollNo LIKE 'Z%') AND RollNo LIKE '%9';
+Empty set (0.01 sec)
+
+mysql> INSERT INTO Student (RollNo, studentName, Course, DOB) VALUES
+    -> ('X12349', 'Rohan Gupta', 'CS', '2000-05-15');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT studentName
+    -> FROM Student
+    -> WHERE (RollNo LIKE 'X%' OR RollNo LIKE 'Z%') AND RollNo LIKE '%9';
++-------------+
+| studentName |
++-------------+
+| Rohan Gupta |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> UPDATE Society
+    -> SET MentorName = 'Mr. Abhishek'
+    -> WHERE SocID = 'S003';
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * from society
+    -> ;
++-------+------------+--------------+------------+
+| SocID | SocName    | MentorName   | TotalSeats |
++-------+------------+--------------+------------+
+| S001  | Chess Club | Mr. Gupta    |         30 |
+| S002  | Maniera    | Mr. Sharma   |         25 |
+| S003  | Blitz      | Mr. Abhishek |         20 |
++-------+------------+--------------+------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT SocName
+    -> FROM Society s
+    -> INNER JOIN Enrollment e ON s.SocID = e.SocID
+    -> GROUP BY s.SocID
+    -> HAVING COUNT(*) > 5;
+Empty set (0.01 sec)
+
+mysql> INSERT INTO Enrollment (RollNo, SocID, DateOfEnrollment) VALUES
+    -> '
+    '> ;
+    '> ;
+    '> ^C
+mysql> select * from enrollment;
++--------+-------+------------------+
+| RollNo | SocID | DateOfEnrollment |
++--------+-------+------------------+
+| 16111  | S001  | 2024-03-10       |
+| 16112  | S002  | 2024-03-15       |
+| 16113  | S001  | 2024-03-12       |
+| 16114  | S003  | 2024-03-20       |
+| 16111  | S002  | 2024-03-25       |
++--------+-------+------------------+
+5 rows in set (0.00 sec)
+
+mysql> -- Inserting NSS society data
+mysql> INSERT INTO Society (SocID, SocName, MentorName, TotalSeats) VALUES
+    -> ('NSS', 'NSS Society', 'Mr. Gupta', 50);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT s.studentName
+    -> FROM Student s
+    -> INNER JOIN Enrollment e ON s.RollNo = e.RollNo
+    -> WHERE e.SocID = 'NSS'
+    -> AND s.DOB = (
+    ->     SELECT MIN(DOB)
+    ->     FROM Student
+    ->     WHERE RollNo IN (
+    ->         SELECT RollNo
+    ->         FROM Enrollment
+    ->         WHERE SocID = 'NSS'
+    ->     )
+    -> );
+Empty set (0.01 sec)
+
+mysql> select * from society.
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> select * from society;
++-------+-------------+--------------+------------+
+| SocID | SocName     | MentorName   | TotalSeats |
++-------+-------------+--------------+------------+
+| NSS   | NSS Society | Mr. Gupta    |         50 |
+| S001  | Chess Club  | Mr. Gupta    |         30 |
+| S002  | Maniera     | Mr. Sharma   |         25 |
+| S003  | Blitz       | Mr. Abhishek |         20 |
++-------+-------------+--------------+------------+
+4 rows in set (0.00 sec)
+
+mysql> UPDATE Society
+    -> SET SocID = 'S004'
+    -> WHERE SocID = 'NSS';
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT s.studentName
+    -> FROM Student s
+    -> INNER JOIN Enrollment e ON s.RollNo = e.RollNo
+    -> WHERE e.SocID = 'S004'
+    -> AND s.DOB = (SELECT MIN(DOB) FROM Student s2
+    -> INNER JOIN Enrollment e2 ON s2.RollNo = e2.RollNo
+    -> WHERE e2.SocID = 'S004');
+Empty set (0.00 sec)
+
+mysql> select * from student;
++--------+-------------+-----------+------------+
+| rollNo | studentName | course    | dob        |
++--------+-------------+-----------+------------+
+| 16111  | Kartik      | CS        | 2004-01-15 |
+| 16112  | Krishna     | CS        | 2004-02-15 |
+| 16113  | Ramesh      | Physics   | 2004-08-18 |
+| 16114  | Aarush      | Chemistry | 2002-07-18 |
+| X12349 | Rohan Gupta | CS        | 2000-05-15 |
++--------+-------------+-----------+------------+
+5 rows in set (0.00 sec)
+
+mysql> select * from society;
++-------+-------------+--------------+------------+
+| SocID | SocName     | MentorName   | TotalSeats |
++-------+-------------+--------------+------------+
+| S001  | Chess Club  | Mr. Gupta    |         30 |
+| S002  | Maniera     | Mr. Sharma   |         25 |
+| S003  | Blitz       | Mr. Abhishek |         20 |
+| S004  | NSS Society | Mr. Gupta    |         50 |
++-------+-------------+--------------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from enrollment;
++--------+-------+------------------+
+| RollNo | SocID | DateOfEnrollment |
++--------+-------+------------------+
+| 16111  | S001  | 2024-03-10       |
+| 16112  | S002  | 2024-03-15       |
+| 16113  | S001  | 2024-03-12       |
+| 16114  | S003  | 2024-03-20       |
+| 16111  | S002  | 2024-03-25       |
++--------+-------+------------------+
+5 rows in set (0.00 sec)
+
+mysql> select s.studentName
+    -> From student s
+    -> ^C
+mysql> SELECT s.studentName
+    -> FROM Student s
+    -> JOIN Enrollment e ON s.RollNo = e.RollNo
+    -> JOIN Society so ON e.SocID = so.SocID
+    -> WHERE so.SocName = 'NSS Society'
+    -> AND s.DOB = (
+    ->     SELECT MIN(DOB)
+    ->     FROM Student s2
+    ->     JOIN Enrollment e2 ON s2.RollNo = e2.RollNo
+    ->     JOIN Society so2 ON e2.SocID = so2.SocID
+    ->     WHERE so2.SocName = 'NSS Society'
+    -> );
+Empty set (0.00 sec)
+
+mysql> INSERT INTO Enrollment (RollNo, SocID, DateOfEnrollment) VALUES
+    -> ('X12349', 'S004', '2024-04-01');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT s.studentName
+    -> FROM Student s
+    -> JOIN Enrollment e ON s.RollNo = e.RollNo
+    -> JOIN Society so ON e.SocID = so.SocID
+    -> WHERE so.SocName = 'NSS Society'
+    -> AND s.DOB = (
+    ->     SELECT MIN(DOB)
+    ->     FROM Student s2
+    ->     JOIN Enrollment e2 ON s2.RollNo = e2.RollNo
+    ->     JOIN Society so2 ON e2.SocID = so2.SocID
+    ->     WHERE so2.SocName = 'NSS Society'
+    -> );
++-------------+
+| studentName |
++-------------+
+| Rohan Gupta |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT SocName
+    -> FROM Society
+    -> WHERE SocID = (
+    ->     SELECT SocID
+    ->     FROM Enrollment
+    ->     GROUP BY SocID
+    ->     ORDER BY COUNT(*) DESC
+    ->     LIMIT 1
+    -> );
++------------+
+| SocName    |
++------------+
+| Chess Club |
++------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT SocName
+    -> FROM Society
+    -> WHERE SocID = (
+    ->     SELECT SocID
+    ->     FROM Enrollment
+    ->     GROUP BY SocID
+    ->     ORDER BY COUNT(*) DESC
+    -> );
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> SELECT SocName
+    -> FROM Society
+    -> WHERE SocID IN (
+    ->     SELECT SocID
+    ->     FROM Enrollment
+    ->     GROUP BY SocID
+    ->     ORDER BY COUNT(*) ASC
+    ->     LIMIT 2
+    -> );
+ERROR 1235 (42000): This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'
+mysql> SELECT studentName
+    -> FROM Student
+    -> WHERE RollNo NOT IN (
+    ->     SELECT RollNo
+    ->     FROM Enrollment
+    -> );
+Empty set (0.01 sec)
+
+mysql> SELECT s.studentName
+    -> FROM Student s
+    -> WHERE (
+    ->     SELECT COUNT(*)
+    ->     FROM Enrollment e
+    ->     WHERE e.RollNo = s.RollNo
+    -> ) >= 2;
++-------------+
+| studentName |
++-------------+
+| Kartik      |
++-------------+
+1 row in set (0.01 sec)
+
+mysql> SELECT DISTINCT s.studentName, so.SocName
+    -> FROM Student s
+    -> LEFT JOIN Enrollment e ON s.RollNo = e.RollNo
+    -> LEFT JOIN Society so ON e.SocID = so.SocID;
++-------------+-------------+
+| studentName | SocName     |
++-------------+-------------+
+| Kartik      | Chess Club  |
+| Kartik      | Maniera     |
+| Krishna     | Maniera     |
+| Ramesh      | Chess Club  |
+| Aarush      | Blitz       |
+| Rohan Gupta | NSS Society |
++-------------+-------------+
+6 rows in set (0.01 sec)
+
+mysql> SELECT s.studentName, so.SocName
+    -> FROM Student s
+    -> LEFT JOIN Enrollment e ON s.RollNo = e.RollNo
+    -> LEFT JOIN Society so ON e.SocID = so.SocID
+    -> GROUP BY s.studentName, so.SocName;
++-------------+-------------+
+| studentName | SocName     |
++-------------+-------------+
+| Kartik      | Chess Club  |
+| Kartik      | Maniera     |
+| Krishna     | Maniera     |
+| Ramesh      | Chess Club  |
+| Aarush      | Blitz       |
+| Rohan Gupta | NSS Society |
++-------------+-------------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO Society (SocID, SocName, MentorName, TotalSeats) VALUES
+    -> ('S005', 'Dancing', 'Ms. Sharma', 40);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO Enrollment (RollNo, SocID, DateOfEnrollment) VALUES
+    -> ('16115', 'S005', '2024-04-01'),
+    -> ('16116', 'S005', '2024-04-03'),
+    -> ('16117', 'S005', '2024-04-05');
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`mysql`.`enrollment`, CONSTRAINT `enrollment_ibfk_1` FOREIGN KEY (`RollNo`) REFERENCES `student` (`rollNo`))
+mysql> INSERT INTO Society (SocID, SocName, MentorName, TotalSeats) VALUES
+    -> ('S006', 'Sashakt', 'Ms. Gupta', 30);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO Enrollment (RollNo, SocID, DateOfEnrollment) VALUES
+    -> ('16120', 'S006', '2024-04-06');
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`mysql`.`enrollment`, CONSTRAINT `enrollment_ibfk_1` FOREIGN KEY (`RollNo`) REFERENCES `student` (`rollNo`))
+mysql> desc society;
++------------+--------------+------+-----+---------+-------+
+| Field      | Type         | Null | Key | Default | Extra |
++------------+--------------+------+-----+---------+-------+
+| SocID      | char(6)      | NO   | PRI | NULL    |       |
+| SocName    | varchar(20)  | YES  |     | NULL    |       |
+| MentorName | varchar(15)  | YES  |     | NULL    |       |
+| TotalSeats | int unsigned | YES  |     | NULL    |       |
++------------+--------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> select * from society;
++-------+-------------+--------------+------------+
+| SocID | SocName     | MentorName   | TotalSeats |
++-------+-------------+--------------+------------+
+| S001  | Chess Club  | Mr. Gupta    |         30 |
+| S002  | Maniera     | Mr. Sharma   |         25 |
+| S003  | Blitz       | Mr. Abhishek |         20 |
+| S004  | NSS Society | Mr. Gupta    |         50 |
+| S005  | Dancing     | Ms. Sharma   |         40 |
+| S006  | Sashakt     | Ms. Gupta    |         30 |
++-------+-------------+--------------+------------+
+6 rows in set (0.00 sec)
+
+mysql> select * from student;
++--------+-------------+-----------+------------+
+| rollNo | studentName | course    | dob        |
++--------+-------------+-----------+------------+
+| 16111  | Kartik      | CS        | 2004-01-15 |
+| 16112  | Krishna     | CS        | 2004-02-15 |
+| 16113  | Ramesh      | Physics   | 2004-08-18 |
+| 16114  | Aarush      | Chemistry | 2002-07-18 |
+| X12349 | Rohan Gupta | CS        | 2000-05-15 |
++--------+-------------+-----------+------------+
+5 rows in set (0.00 sec)
+
+mysql> INSERT INTO Student (RollNo, studentName, course, dob) VALUES
+    -> ('16115', 'Shivam', 'BMS', '2003-01-01');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from enrollment;
++--------+-------+------------------+
+| RollNo | SocID | DateOfEnrollment |
++--------+-------+------------------+
+| 16111  | S001  | 2024-03-10       |
+| 16112  | S002  | 2024-03-15       |
+| 16113  | S001  | 2024-03-12       |
+| 16114  | S003  | 2024-03-20       |
+| 16111  | S002  | 2024-03-25       |
+| X12349 | S004  | 2024-04-01       |
++--------+-------+------------------+
+6 rows in set (0.00 sec)
+
+mysql> select * from student;
++--------+-------------+-----------+------------+
+| rollNo | studentName | course    | dob        |
++--------+-------------+-----------+------------+
+| 16111  | Kartik      | CS        | 2004-01-15 |
+| 16112  | Krishna     | CS        | 2004-02-15 |
+| 16113  | Ramesh      | Physics   | 2004-08-18 |
+| 16114  | Aarush      | Chemistry | 2002-07-18 |
+| 16115  | Shivam      | BMS       | 2003-01-01 |
+| X12349 | Rohan Gupta | CS        | 2000-05-15 |
++--------+-------------+-----------+------------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO Enrollment (RollNo, SocID, DateOfEnrollment) VALUES
+    -> ('16115', 'S005', '2023-09-11');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO Enrollment (RollNo, SocID, DateOfEnrollment) VALUES
+    -> ('16115', 'S006', '2023-09-11');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from enrollment;
++--------+-------+------------------+
+| RollNo | SocID | DateOfEnrollment |
++--------+-------+------------------+
+| 16111  | S001  | 2024-03-10       |
+| 16112  | S002  | 2024-03-15       |
+| 16113  | S001  | 2024-03-12       |
+| 16114  | S003  | 2024-03-20       |
+| 16111  | S002  | 2024-03-25       |
+| X12349 | S004  | 2024-04-01       |
+| 16115  | S005  | 2023-09-11       |
+| 16115  | S006  | 2023-09-11       |
++--------+-------+------------------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT s.studentName
+    -> FROM Student s
+    -> INNER JOIN Enrollment e ON s.RollNo = e.RollNo
+    -> INNER JOIN Society so ON e.SocID = so.SocID
+    -> WHERE so.SocName IN ('Debating', 'Dancing', 'Sashakt');
++-------------+
+| studentName |
++-------------+
+| Shivam      |
+| Shivam      |
++-------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT SocName
+    -> FROM Society
+    -> WHERE MentorName LIKE '%Gupta%';
++-------------+
+| SocName     |
++-------------+
+| Chess Club  |
+| NSS Society |
+| Sashakt     |
++-------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT SocName, TotalSeats - COUNT(e.RollNo) AS VacantSeats
+    -> FROM Society so
+    -> LEFT JOIN Enrollment e ON so.SocID = e.SocID
+    -> GROUP BY so.SocID, so.SocName, so.TotalSeats;
++-------------+-------------+
+| SocName     | VacantSeats |
++-------------+-------------+
+| Chess Club  |          28 |
+| Maniera     |          23 |
+| Blitz       |          19 |
+| NSS Society |          49 |
+| Dancing     |          39 |
+| Sashakt     |          29 |
++-------------+-------------+
+6 rows in set (0.00 sec)
+
+mysql> UPDATE Society
+    -> SET TotalSeats = TotalSeats * 1.1;
+Query OK, 6 rows affected (0.00 sec)
+Rows matched: 6  Changed: 6  Warnings: 0
+
+mysql> select TotalSeats from society;
++------------+
+| TotalSeats |
++------------+
+|         33 |
+|         28 |
+|         22 |
+|         55 |
+|         44 |
+|         33 |
++------------+
+6 rows in set (0.00 sec)
+
+mysql> ALTER TABLE Enrollment
+    -> ADD COLUMN EnrollmentFeesPaid ENUM('Yes', 'No');
+Query OK, 0 rows affected (0.12 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> select * from enrollment;
++--------+-------+------------------+--------------------+
+| RollNo | SocID | DateOfEnrollment | EnrollmentFeesPaid |
++--------+-------+------------------+--------------------+
+| 16111  | S001  | 2024-03-10       | NULL               |
+| 16112  | S002  | 2024-03-15       | NULL               |
+| 16113  | S001  | 2024-03-12       | NULL               |
+| 16114  | S003  | 2024-03-20       | NULL               |
+| 16111  | S002  | 2024-03-25       | NULL               |
+| X12349 | S004  | 2024-04-01       | NULL               |
+| 16115  | S005  | 2023-09-11       | NULL               |
+| 16115  | S006  | 2023-09-11       | NULL               |
++--------+-------+------------------+--------------------+
+8 rows in set (0.00 sec)
+
+mysql> UPDATE Enrollment
+    -> SET DateOfEnrollment = CASE
+    ->     WHEN SocID = 's1' THEN '2018-01-15'
+    ->     WHEN SocID = 's2' THEN CURRENT_DATE()
+    ->     WHEN SocID = 's3' THEN '2018-01-02'
+    ->     WHEN SocID = 's3' THEN '2018-01-02'^C
+mysql> UPDATE Enrollment
+    -> SET DateOfEnrollment = CASE
+    ->     WHEN SocID = 'S001' THEN '2018-01-15'
+    -> ^C
+mysql> UPDATE Enrollment
+    -> SET DateOfEnrollment = CASE
+    -> WHEN SocID = 'S001' THEN '2018-01-15'
+    -> WHEN SocID = 'S002' THEN CURRENT_DATE()
+    -> WHEN SocID = 'S003' THEN '2018-01-02'
+    -> ELSE DateOfEnrollment
+    -> end;
+Query OK, 5 rows affected (0.00 sec)
+Rows matched: 8  Changed: 5  Warnings: 0
+
+mysql> select * from enrollment;
++--------+-------+------------------+--------------------+
+| RollNo | SocID | DateOfEnrollment | EnrollmentFeesPaid |
++--------+-------+------------------+--------------------+
+| 16111  | S001  | 2018-01-15       | NULL               |
+| 16112  | S002  | 2024-04-24       | NULL               |
+| 16113  | S001  | 2018-01-15       | NULL               |
+| 16114  | S003  | 2018-01-02       | NULL               |
+| 16111  | S002  | 2024-04-24       | NULL               |
+| X12349 | S004  | 2024-04-01       | NULL               |
+| 16115  | S005  | 2023-09-11       | NULL               |
+| 16115  | S006  | 2023-09-11       | NULL               |
++--------+-------+------------------+--------------------+
+8 rows in set (0.00 sec)
+
+mysql> CREATE VIEW Society_Enrollment_Count AS
+    -> SELECT so.SocID, so.SocName, COUNT(e.RollNo) AS TotalEnrolled
+    -> FROM Society so
+    -> LEFT JOIN Enrollment e ON so.SocID = e.SocID
+    -> GROUP BY so.SocID, so.SocName;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from society;
++-------+-------------+--------------+------------+
+| SocID | SocName     | MentorName   | TotalSeats |
++-------+-------------+--------------+------------+
+| S001  | Chess Club  | Mr. Gupta    |         33 |
+| S002  | Maniera     | Mr. Sharma   |         28 |
+| S003  | Blitz       | Mr. Abhishek |         22 |
+| S004  | NSS Society | Mr. Gupta    |         55 |
+| S005  | Dancing     | Ms. Sharma   |         44 |
+| S006  | Sashakt     | Ms. Gupta    |         33 |
++-------+-------------+--------------+------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT s.studentName
+    -> FROM Student s
+    -> WHERE (
+    ->     SELECT COUNT(DISTINCT SocID)
+    ->     FROM Enrollment e
+    ->     WHERE e.RollNo = s.RollNo
+    -> ) = (
+    ->     SELECT COUNT(*)
+    ->     FROM Society
+    -> );
+Empty set (0.01 sec)
+
+mysql> SELECT COUNT(DISTINCT SocID)
+    -> FROM Enrollment
+    -> GROUP BY SocID
+    -> HAVING COUNT(*) > 5;
+Empty set (0.00 sec)
+
+mysql> ALTER TABLE Student
+    -> ADD COLUMN MobileNumber VARCHAR(10) DEFAULT '9999999999';
+Query OK, 0 rows affected (0.07 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM STUDENT;
++--------+-------------+-----------+------------+--------------+
+| rollNo | studentName | course    | dob        | MobileNumber |
++--------+-------------+-----------+------------+--------------+
+| 16111  | Kartik      | CS        | 2004-01-15 | 9999999999   |
+| 16112  | Krishna     | CS        | 2004-02-15 | 9999999999   |
+| 16113  | Ramesh      | Physics   | 2004-08-18 | 9999999999   |
+| 16114  | Aarush      | Chemistry | 2002-07-18 | 9999999999   |
+| 16115  | Shivam      | BMS       | 2003-01-01 | 9999999999   |
+| X12349 | Rohan Gupta | CS        | 2000-05-15 | 9999999999   |
++--------+-------------+-----------+------------+--------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT s.studentName
+    -> FROM Student s
+    -> INNER JOIN Enrollment e ON s.RollNo = e.RollNo
+    -> WHERE YEAR(s.DOB) = 2001;
+Empty set (0.00 sec)
+
+mysql> SELECT COUNT(*) AS NumSocieties
+    -> FROM Society
+    -> WHERE SocName LIKE 'S%t' AND SocID IN (
+    ->     SELECT SocID
+    ->     FROM Enrollment
+    ->     GROUP BY SocID
+    ->     HAVING COUNT(*) >= 5
+    -> );
++--------------+
+| NumSocieties |
++--------------+
+|            0 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT SocName AS SocietyName, MentorName, TotalSeats AS TotalCapacity,
+    ->        COUNT(RollNo) AS TotalEnrolled, TotalSeats - COUNT(RollNo) AS UnfilledSeats
+    -> FROM Society
+    -> LEFT JOIN Enrollment ON Society.SocID = Enrollment.SocID
+    -> GROUP BY SocietyName, MentorName, TotalCapacity;
++-------------+--------------+---------------+---------------+---------------+
+| SocietyName | MentorName   | TotalCapacity | TotalEnrolled | UnfilledSeats |
++-------------+--------------+---------------+---------------+---------------+
+| Chess Club  | Mr. Gupta    |            33 |             2 |            31 |
+| Maniera     | Mr. Sharma   |            28 |             2 |            26 |
+| Blitz       | Mr. Abhishek |            22 |             1 |            21 |
+| NSS Society | Mr. Gupta    |            55 |             1 |            54 |
+| Dancing     | Ms. Sharma   |            44 |             1 |            43 |
+| Sashakt     | Ms. Gupta    |            33 |             1 |            32 |
++-------------+--------------+---------------+---------------+---------------+
+6 rows in set (0.00 sec)
+
+mysql>
+
+
+
